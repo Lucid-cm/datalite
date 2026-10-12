@@ -1,0 +1,29 @@
+{
+  "name": "datalite",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Paste a link. See what the page really costs in data. Read it for a fraction.",
+  "engines": { "node": ">=18.17" },
+  "scripts": {
+    "dev": "sh scripts/dev.sh",
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "compression": "^1.7.5",
+    "express": "^4.21.2",
+    "linkedom": "^0.18.5",
+    "sanitize-html": "^2.13.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.11"
+  }
+}

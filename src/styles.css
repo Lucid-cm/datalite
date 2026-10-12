@@ -136,3 +136,10 @@ input[type='text']::placeholder { color: var(--mute); }
   .fill { transition: none; }
   html { scroll-behavior: auto; }
 }
+
+/* bank transfer block */
+.bank { margin: 0 0 1rem; padding: 1rem; border: 2px dashed var(--line); border-radius: 0.6rem; }
+.bank dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0 0 0.9rem; }
+.bank dt { color: var(--mute); }
+.bank dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+.bank-number { font-size: 1.4rem; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }

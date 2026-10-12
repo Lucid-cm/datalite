@@ -3,20 +3,20 @@ import { SUPPORT } from '../config.js';
 import { fmtNaira } from '../lib/format.js';
 
 export default function Support() {
-  const { goal, raised, paymentLink, usdcAddress, usdcNetwork, githubUrl } = SUPPORT;
-  const [copied, setCopied] = useState(false);
+  const { goal, raised, bankName, accountName, accountNumber, paymentLink, usdcAddress, usdcNetwork, githubUrl } = SUPPORT;
+  const [copied, setCopied] = useState('');
 
-  if (!paymentLink && !usdcAddress) return null;
+  if (!paymentLink && !usdcAddress && !accountNumber) return null;
 
   const pct = Math.min(100, Math.round((raised / goal) * 100));
 
-  async function copyAddress() {
+  async function copy(text, key) {
     try {
-      await navigator.clipboard.writeText(usdcAddress);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied(''), 2500);
     } catch {
-      /* clipboard blocked; address is visible so it can be copied by hand */
+      /* clipboard blocked; the value is visible so it can be copied by hand */
     }
   }
 
@@ -42,6 +42,26 @@ export default function Support() {
         {fmtNaira(raised)} of {fmtNaira(goal)} for the screen repair
       </p>
 
+      {accountNumber && (
+        <div className="bank">
+          <dl>
+            <dt>Bank</dt>
+            <dd>{bankName || 'Bank transfer'}</dd>
+            {accountName && (
+              <>
+                <dt>Name</dt>
+                <dd>{accountName}</dd>
+              </>
+            )}
+            <dt>Account</dt>
+            <dd className="bank-number">{accountNumber}</dd>
+          </dl>
+          <button type="button" className="btn btn-solid" onClick={() => copy(accountNumber, 'acct')}>
+            {copied === 'acct' ? 'Account number copied' : 'Copy account number'}
+          </button>
+        </div>
+      )}
+
       <div className="actions">
         {paymentLink && (
           <a className="btn btn-solid" href={paymentLink} target="_blank" rel="noopener noreferrer">
@@ -49,8 +69,8 @@ export default function Support() {
           </a>
         )}
         {usdcAddress && (
-          <button type="button" className="btn btn-ghost" onClick={copyAddress}>
-            {copied ? 'Address copied' : `Copy USDC address${usdcNetwork ? ` (${usdcNetwork})` : ''}`}
+          <button type="button" className="btn btn-ghost" onClick={() => copy(usdcAddress, 'usdc')}>
+            {copied === 'usdc' ? 'Address copied' : `Copy USDC address${usdcNetwork ? ` (${usdcNetwork})` : ''}`}
           </button>
         )}
         {githubUrl && (

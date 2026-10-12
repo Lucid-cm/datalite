@@ -10,7 +10,10 @@ export const SAMPLES = [
 export const SUPPORT = {
   goal: 50000, // naira needed for the screen repair
   raised: 0, // update by hand as support comes in
-  paymentLink: '', // Paystack / Selar / Flutterwave payment page URL
+  bankName: 'OPay', // bank or wallet donors send to
+  accountName: 'Olaoye olamide ', // FILL THIS: your name exactly as it shows on OPay
+  accountNumber: '8026685707', // bank transfer account number
+  paymentLink: '', // optional: Paystack / Selar / Flutterwave payment page URL
   usdcAddress: '', // optional
   usdcNetwork: '', // e.g. "Base" or "Solana"; people need this to send safely
   githubUrl: '', // optional

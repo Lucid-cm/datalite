@@ -28,6 +28,6 @@
 4. Updates: `git add -A && git commit -m "msg" && git push`. Render redeploys by itself.
 
 ## If the build fails
-Copy the last 20 lines of the build log and send them. Common causes:
+Copy the last 20 lines of the build log and open an issue with them. Common causes:
 - Wrong Node version: confirm `NODE_VERSION=22` is set.
 - `vite: not found`: the build command must include `--include=dev`.

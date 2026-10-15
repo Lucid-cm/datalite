@@ -32,7 +32,7 @@ Or in Chrome DevTools, Network tab, click `lite`, Timing tab (Server Timing sect
 
 ## Honest limits
 
-- **Not run end to end here.** The 20 unit tests pass (jobs, coalescing, truncation, link-safety guard), and every server file passes a syntax check. The React side was not compiled. Your first run is the real test.
+- **Test coverage:** unit tests cover the job store, request coalescing, body truncation, and the link-safety guard (`npm test`). End-to-end behavior depends on the host and the sites being fetched.
 - **Render's free instance has very little CPU.** Parsing a big page can be several times slower there than on your phone. If `parse=` in the log is high on Render, the fix is a paid instance, not more code.
 - **Cold start:** a free service sleeps after 15 idle minutes and takes about a minute to wake. A free uptime pinger hitting `/api/health` every 10 minutes keeps it warm.
 - **Truncated pages:** a page bigger than 1.5 MB is cut. Articles near the end may be missing. Raise `MAX_HTML_BYTES` in `server/index.js` if that bites.

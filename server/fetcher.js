@@ -45,10 +45,13 @@ export async function fetchPublic(startUrl, opts = {}) {
   throw new HttpError(502, 'too_many_redirects', 'The site redirected too many times.');
 }
 
-/** Reads a response body with a hard byte cap. */
-export async function readBody(res, maxBytes) {
+/**
+ * Reads a response body with a hard byte cap.
+ * With { truncate: true } it keeps the first maxBytes and stops, instead of failing.
+ */
+export async function readBody(res, maxBytes, { truncate = false } = {}) {
   const declared = Number(res.headers.get('content-length'));
-  if (Number.isFinite(declared) && declared > maxBytes) {
+  if (!truncate && Number.isFinite(declared) && declared > maxBytes) {
     await res.body?.cancel?.().catch(() => {});
     throw new HttpError(413, 'too_large', 'That page is too large for DataLite.');
   }
@@ -60,11 +63,17 @@ export async function readBody(res, maxBytes) {
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    total += value.length;
-    if (total > maxBytes) {
+    if (total + value.length > maxBytes) {
+      if (!truncate) {
+        await reader.cancel().catch(() => {});
+        throw new HttpError(413, 'too_large', 'That page is too large for DataLite.');
+      }
+      chunks.push(value.subarray(0, maxBytes - total));
+      total = maxBytes;
       await reader.cancel().catch(() => {});
-      throw new HttpError(413, 'too_large', 'That page is too large for DataLite.');
+      break;
     }
+    total += value.length;
     chunks.push(value);
   }
   return Buffer.concat(chunks);

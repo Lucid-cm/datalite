@@ -63,6 +63,24 @@ export function normalizeInput(raw) {
   return /^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`;
 }
 
+// Short-lived DNS cache. A page with 60 assets on 6 hosts needs 6 lookups, not 60.
+// Trade-off: slightly longer window for DNS changes to be noticed.
+const DNS_TTL_MS = 60 * 1000;
+const DNS_MAX = 500;
+const dnsCache = new Map();
+
+function resolveHost(host) {
+  const now = Date.now();
+  const hit = dnsCache.get(host);
+  if (hit && hit.expires > now) return hit.promise;
+
+  if (dnsCache.size >= DNS_MAX) dnsCache.delete(dnsCache.keys().next().value);
+  const promise = dns.lookup(host, { all: true, verbatim: true });
+  dnsCache.set(host, { promise, expires: now + DNS_TTL_MS });
+  promise.catch(() => dnsCache.delete(host));
+  return promise;
+}
+
 /**
  * Throws unless the URL is plain http(s) on a standard port and every address
  * its hostname resolves to is public.
@@ -100,7 +118,7 @@ export async function assertPublicUrl(input) {
 
   let addrs;
   try {
-    addrs = await dns.lookup(host, { all: true, verbatim: true });
+    addrs = await resolveHost(host);
   } catch {
     throw new HttpError(502, 'dns_failed', 'Could not find that site. Check the spelling.');
   }

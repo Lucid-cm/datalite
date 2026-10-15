@@ -98,7 +98,16 @@ export default function App() {
         </section>
 
         <div ref={resultRef} className="result" aria-live="polite">
-          {loading && <p className="status">Fetching the page and weighing its files. This takes a few seconds.</p>}
+          {loading && (
+            <>
+              <p className="status">Fetching and reading the page. A few seconds.</p>
+              <div className="skeleton" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            </>
+          )}
           {state.status === 'error' && (
             <p className="status status-error" role="alert">
               {state.message}

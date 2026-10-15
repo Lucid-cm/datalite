@@ -3,7 +3,7 @@ import { Readability } from '@mozilla/readability';
 import sanitizeHtml from 'sanitize-html';
 import { HttpError } from './errors.js';
 
-export const MAX_ASSETS_TO_MEASURE = 40;
+export const MAX_ASSETS_TO_MEASURE = 60;
 
 const SANITIZE = {
   allowedTags: [
@@ -66,6 +66,11 @@ export function extractReadable(html, finalUrl) {
     const abs = toAbsolute(a.getAttribute('href'), finalUrl);
     if (abs) a.setAttribute('href', abs);
   });
+
+  // Shrink the DOM before Readability: less to walk, faster on slow CPUs.
+  document
+    .querySelectorAll('script, style, noscript, svg, iframe, template, canvas, video, audio, object, embed')
+    .forEach((n) => n.remove());
 
   let article = null;
   try {

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: datalite
+    runtime: node
+    plan: free
+    # --no-package-lock: the lockfile was created on an Android phone, and a lockfile from
+    # another platform can miss Linux-only native packages (esbuild, rollup). Installing
+    # fresh on Render avoids that. Trade-off: transitive versions are not frozen.
+    buildCommand: npm install --include=dev --no-package-lock && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: TRUST_PROXY
+        value: "1"
+      - key: NODE_VERSION
+        value: "22"

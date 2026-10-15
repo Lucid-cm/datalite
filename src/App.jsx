@@ -8,6 +8,7 @@ import Support from './components/Support.jsx';
 export default function App() {
   const [input, setInput] = useState('');
   const [state, setState] = useState({ status: 'idle' });
+  const [slow, setSlow] = useState(false);
   const abortRef = useRef(null);
   const resultRef = useRef(null);
 
@@ -41,6 +42,16 @@ export default function App() {
     return () => abortRef.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After a few seconds of waiting, explain why (free hosts sleep when idle).
+  useEffect(() => {
+    if (state.status !== 'loading') {
+      setSlow(false);
+      return undefined;
+    }
+    const id = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(id);
+  }, [state.status]);
 
   const loading = state.status === 'loading';
 
@@ -100,7 +111,11 @@ export default function App() {
         <div ref={resultRef} className="result" aria-live="polite">
           {loading && (
             <>
-              <p className="status">Fetching and reading the page. A few seconds.</p>
+              <p className="status">
+                {slow
+                  ? 'Taking longer than usual. If the site was idle, the server may be waking up. Hang on.'
+                  : 'Fetching and reading the page. A few seconds.'}
+              </p>
               <div className="skeleton" aria-hidden="true">
                 <span />
                 <span />
